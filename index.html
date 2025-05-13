@@ -1,0 +1,122 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Кости</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: radial-gradient(circle at center, #1c1c1c, #000);
+      font-family: sans-serif;
+      height: 100%;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      user-select: none;
+    }
+
+    h1 {
+      position: absolute;
+      top: 2vh;
+      font-size: 5vw;
+      color: #ccc;
+      text-align: center;
+    }
+
+    footer {
+      position: absolute;
+      bottom: 2vh;
+      font-size: 3vw;
+      color: rgba(255,255,255,0.2);
+    }
+
+    #dice-container {
+      display: flex;
+      gap: 10vw;
+    }
+
+    .dice {
+      width: 36vw;
+      height: 36vw;
+      max-width: 170px;
+      max-height: 170px;
+      background: #fff;
+      border-radius: 6vw;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      place-items: center;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5), inset -3px -3px 10px rgba(255,255,255,0.3);
+      transition: transform 0.2s ease;
+    }
+
+    .pip {
+      width: 6vw;
+      height: 6vw;
+      max-width: 18px;
+      max-height: 18px;
+      background: #111;
+      border-radius: 50%;
+    }
+
+    .bounce {
+      animation: bounce 0.3s ease;
+    }
+
+    @keyframes bounce {
+      0%   { transform: translateY(0) scale(1); }
+      30%  { transform: translateY(-20%) scale(1.05); }
+      100% { transform: translateY(0) scale(1); }
+    }
+  </style>
+</head>
+<body onclick="rollDice()">
+  <h1>Тапни, чтобы бросить</h1>
+  <div id="dice-container">
+    <div class="dice" id="dice1"></div>
+    <div class="dice" id="dice2"></div>
+  </div>
+  <footer>Kostibot Dice</footer>
+
+  <script>
+    const patterns = {
+      1: [4],
+      2: [0, 8],
+      3: [0, 4, 8],
+      4: [0, 2, 6, 8],
+      5: [0, 2, 4, 6, 8],
+      6: [0, 2, 3, 5, 6, 8]
+    };
+
+    function createPips(value, container) {
+      container.innerHTML = '';
+      container.classList.remove('bounce');
+      setTimeout(() => container.classList.add('bounce'), 10);
+      for (let i = 0; i < 9; i++) {
+        const cell = document.createElement('div');
+        if (patterns[value].includes(i)) {
+          const pip = document.createElement('div');
+          pip.className = 'pip';
+          cell.appendChild(pip);
+        }
+        container.appendChild(cell);
+      }
+    }
+
+    function rollDice() {
+      const val1 = Math.floor(Math.random() * 6) + 1;
+      const val2 = Math.floor(Math.random() * 6) + 1;
+      createPips(val1, document.getElementById('dice1'));
+      createPips(val2, document.getElementById('dice2'));
+    }
+
+    rollDice();
+  </script>
+</body>
+</html>
