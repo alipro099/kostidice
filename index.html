@@ -3,120 +3,97 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Кости</title>
+  <title>3D Бросок костей</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    html, body {
+    body {
       margin: 0;
-      padding: 0;
-      background: radial-gradient(circle at center, #1c1c1c, #000);
-      font-family: sans-serif;
-      height: 100%;
+      background: radial-gradient(#111, #000);
       overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      color: white;
-      user-select: none;
     }
-
-    h1 {
+    canvas {
+      display: block;
+    }
+    #hint {
       position: absolute;
-      top: 2vh;
-      font-size: 5vw;
-      color: #ccc;
+      top: 20px;
+      width: 100%;
       text-align: center;
-    }
-
-    footer {
-      position: absolute;
-      bottom: 2vh;
-      font-size: 3vw;
-      color: rgba(255,255,255,0.2);
-    }
-
-    #dice-container {
-      display: flex;
-      gap: 10vw;
-    }
-
-    .dice {
-      width: 36vw;
-      height: 36vw;
-      max-width: 170px;
-      max-height: 170px;
-      background: #fff;
-      border-radius: 6vw;
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      grid-template-rows: repeat(3, 1fr);
-      place-items: center;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.5), inset -3px -3px 10px rgba(255,255,255,0.3);
-      transition: transform 0.2s ease;
-    }
-
-    .pip {
-      width: 6vw;
-      height: 6vw;
-      max-width: 18px;
-      max-height: 18px;
-      background: #111;
-      border-radius: 50%;
-    }
-
-    .bounce {
-      animation: bounce 0.3s ease;
-    }
-
-    @keyframes bounce {
-      0%   { transform: translateY(0) scale(1); }
-      30%  { transform: translateY(-20%) scale(1.05); }
-      100% { transform: translateY(0) scale(1); }
+      font-size: 20px;
+      color: white;
+      font-family: sans-serif;
     }
   </style>
 </head>
-<body onclick="rollDice()">
-  <h1>Тапни, чтобы бросить</h1>
-  <div id="dice-container">
-    <div class="dice" id="dice1"></div>
-    <div class="dice" id="dice2"></div>
-  </div>
-  <footer>Kostibot Dice</footer>
-
+<body>
+  <div id="hint">Тапни, чтобы бросить кости</div>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.154.0/build/three.min.js"></script>
   <script>
-    const patterns = {
-      1: [4],
-      2: [0, 8],
-      3: [0, 4, 8],
-      4: [0, 2, 6, 8],
-      5: [0, 2, 4, 6, 8],
-      6: [0, 2, 3, 5, 6, 8]
-    };
+    let scene, camera, renderer;
+    let dice1, dice2;
+    let cubes = [];
 
-    function createPips(value, container) {
-      container.innerHTML = '';
-      container.classList.remove('bounce');
-      setTimeout(() => container.classList.add('bounce'), 10);
-      for (let i = 0; i < 9; i++) {
-        const cell = document.createElement('div');
-        if (patterns[value].includes(i)) {
-          const pip = document.createElement('div');
-          pip.className = 'pip';
-          cell.appendChild(pip);
-        }
-        container.appendChild(cell);
-      }
+    function createDice(color = 0xffffff) {
+      const geometry = new THREE.BoxGeometry(1, 1, 1);
+      const material = new THREE.MeshStandardMaterial({ color });
+      const cube = new THREE.Mesh(geometry, material);
+      return cube;
     }
 
-    function rollDice() {
-      const val1 = Math.floor(Math.random() * 6) + 1;
-      const val2 = Math.floor(Math.random() * 6) + 1;
-      createPips(val1, document.getElementById('dice1'));
-      createPips(val2, document.getElementById('dice2'));
+    function throwDice() {
+      cubes.forEach(cube => {
+        cube.position.set((Math.random() - 0.5) * 4, 3 + Math.random() * 2, (Math.random() - 0.5) * 4);
+        cube.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
+      });
     }
 
-    rollDice();
+    function init() {
+      scene = new THREE.Scene();
+      camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 100);
+      camera.position.set(0, 5, 8);
+      camera.lookAt(0, 0, 0);
+
+      renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      document.body.appendChild(renderer.domElement);
+
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+      scene.add(ambientLight);
+
+      const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+      directionalLight.position.set(0, 5, 5);
+      scene.add(directionalLight);
+
+      const floor = new THREE.Mesh(
+        new THREE.PlaneGeometry(20, 20),
+        new THREE.MeshStandardMaterial({ color: 0x222222 })
+      );
+      floor.rotation.x = -Math.PI / 2;
+      scene.add(floor);
+
+      dice1 = createDice();
+      dice2 = createDice();
+      scene.add(dice1, dice2);
+      cubes.push(dice1, dice2);
+
+      throwDice();
+      animate();
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+      renderer.render(scene, camera);
+    }
+
+    window.addEventListener('click', throwDice);
+    window.addEventListener('touchstart', throwDice);
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    init();
   </script>
 </body>
 </html>
