@@ -1,0 +1,68 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Мини-аппка: Кости</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    body {
+      background-color: #1f1f1f;
+      color: #fff;
+      font-family: 'Arial', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    h1 {
+      margin-bottom: 20px;
+    }
+    #dice-container {
+      display: flex;
+      gap: 30px;
+      margin-bottom: 30px;
+    }
+    .dice {
+      font-size: 80px;
+      transition: transform 0.2s;
+    }
+    button {
+      padding: 12px 24px;
+      font-size: 18px;
+      background-color: #0088cc;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:active {
+      transform: scale(0.96);
+    }
+  </style>
+</head>
+<body>
+  <h1>Бросай кости!</h1>
+  <div id="dice-container">
+    <div class="dice" id="dice1">⚀</div>
+    <div class="dice" id="dice2">⚀</div>
+  </div>
+  <button onclick="rollDice()">Бросить</button>
+
+  <script>
+    const diceFaces = ['⚀','⚁','⚂','⚃','⚄','⚅'];
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+
+    function rollDice() {
+      const dice1 = Math.floor(Math.random() * 6);
+      const dice2 = Math.floor(Math.random() * 6);
+      document.getElementById('dice1').textContent = diceFaces[dice1];
+      document.getElementById('dice2').textContent = diceFaces[dice2];
+    }
+  </script>
+</body>
+</html>
