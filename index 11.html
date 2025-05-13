@@ -1,0 +1,54 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Кости</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      background-color: #1e1e1e;
+      color: #fff;
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      user-select: none;
+    }
+    h1 {
+      margin-bottom: 30px;
+      font-size: 22px;
+      color: #ccc;
+    }
+    #dice-container {
+      display: flex;
+      gap: 40px;
+    }
+    .dice {
+      font-size: 90px;
+      transition: transform 0.2s;
+    }
+    .dice:active {
+      transform: scale(0.95);
+    }
+  </style>
+</head>
+<body onclick="rollDice()">
+  <h1>Нажми на экран</h1>
+  <div id="dice-container">
+    <div class="dice" id="dice1">⚀</div>
+    <div class="dice" id="dice2">⚀</div>
+  </div>
+
+  <script>
+    const diceFaces = ['⚀','⚁','⚂','⚃','⚄','⚅'];
+    function rollDice() {
+      document.getElementById('dice1').textContent = diceFaces[Math.floor(Math.random() * 6)];
+      document.getElementById('dice2').textContent = diceFaces[Math.floor(Math.random() * 6)];
+    }
+  </script>
+</body>
+</html>
