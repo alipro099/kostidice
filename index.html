@@ -1,122 +1,595 @@
-
 <!DOCTYPE html>
 <html lang="ru">
-<head>
-  <meta charset="UTF-8">
-  <title>Кости</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      background: radial-gradient(circle at center, #1c1c1c, #000);
-      font-family: sans-serif;
-      height: 100%;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      color: white;
-      user-select: none;
-    }
-
-    h1 {
-      position: absolute;
-      top: 2vh;
-      font-size: 5vw;
-      color: #ccc;
-      text-align: center;
-    }
-
-    footer {
-      position: absolute;
-      bottom: 2vh;
-      font-size: 3vw;
-      color: rgba(255,255,255,0.2);
-    }
-
-    #dice-container {
-      display: flex;
-      gap: 10vw;
-    }
-
-    .dice {
-      width: 36vw;
-      height: 36vw;
-      max-width: 170px;
-      max-height: 170px;
-      background: #fff;
-      border-radius: 6vw;
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      grid-template-rows: repeat(3, 1fr);
-      place-items: center;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.5), inset -3px -3px 10px rgba(255,255,255,0.3);
-      transition: transform 0.2s ease;
-    }
-
-    .pip {
-      width: 6vw;
-      height: 6vw;
-      max-width: 18px;
-      max-height: 18px;
-      background: #111;
-      border-radius: 50%;
-    }
-
-    .bounce {
-      animation: bounce 0.3s ease;
-    }
-
-    @keyframes bounce {
-      0%   { transform: translateY(0) scale(1); }
-      30%  { transform: translateY(-20%) scale(1.05); }
-      100% { transform: translateY(0) scale(1); }
-    }
-  </style>
-</head>
-<body onclick="rollDice()">
-  <h1>Тапни, чтобы бросить</h1>
-  <div id="dice-container">
-    <div class="dice" id="dice1"></div>
-    <div class="dice" id="dice2"></div>
-  </div>
-  <footer>Kostibot Dice</footer>
-
-  <script>
-    const patterns = {
-      1: [4],
-      2: [0, 8],
-      3: [0, 4, 8],
-      4: [0, 2, 6, 8],
-      5: [0, 2, 4, 6, 8],
-      6: [0, 2, 3, 5, 6, 8]
-    };
-
-    function createPips(value, container) {
-      container.innerHTML = '';
-      container.classList.remove('bounce');
-      setTimeout(() => container.classList.add('bounce'), 10);
-      for (let i = 0; i < 9; i++) {
-        const cell = document.createElement('div');
-        if (patterns[value].includes(i)) {
-          const pip = document.createElement('div');
-          pip.className = 'pip';
-          cell.appendChild(pip);
-        }
-        container.appendChild(cell);
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HoopVerse Mini App</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+      :root {
+        color-scheme: only dark;
+        --bg: #050505;
+        --cream: #fffdf7;
+        --neon-orange: #ff5e00;
+        --purple: #b45eff;
+        font-family: 'Roboto', sans-serif;
       }
-    }
 
-    function rollDice() {
-      const val1 = Math.floor(Math.random() * 6) + 1;
-      const val2 = Math.floor(Math.random() * 6) + 1;
-      createPips(val1, document.getElementById('dice1'));
-      createPips(val2, document.getElementById('dice2'));
-    }
+      * {
+        box-sizing: border-box;
+      }
 
-    rollDice();
-  </script>
-</body>
+      body {
+        margin: 0;
+        background: radial-gradient(circle at 20% 20%, rgba(180, 94, 255, 0.18), transparent 45%),
+          radial-gradient(circle at 80% 10%, rgba(255, 94, 0, 0.18), transparent 55%),
+          var(--bg);
+        color: var(--cream);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: stretch;
+        padding: 16px;
+      }
+
+      #root {
+        width: min(420px, 100%);
+      }
+
+      .app-shell {
+        background: rgba(12, 12, 12, 0.72);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 24px;
+        padding: 20px;
+        box-shadow: 0 24px 64px rgba(0, 0, 0, 0.45);
+        backdrop-filter: blur(12px);
+      }
+
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+      }
+
+      .user-pill {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 14px;
+        border-radius: 18px;
+        background: linear-gradient(135deg, rgba(180, 94, 255, 0.2), rgba(255, 94, 0, 0.2));
+      }
+
+      .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.08);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        font-weight: 600;
+      }
+
+      .coins-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 12px;
+        border-radius: 16px;
+        background: rgba(255, 94, 0, 0.2);
+        color: var(--neon-orange);
+        font-weight: 600;
+      }
+
+      nav {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .menu-card {
+        border-radius: 20px;
+        padding: 18px;
+        min-height: 120px;
+        background: linear-gradient(140deg, rgba(255, 94, 0, 0.22), rgba(180, 94, 255, 0.12));
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+      }
+
+      .menu-card.full-width {
+        grid-column: span 2;
+      }
+
+      .menu-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 22px rgba(180, 94, 255, 0.2);
+        cursor: pointer;
+      }
+
+      .menu-title {
+        font-size: 18px;
+        font-weight: 700;
+      }
+
+      .menu-emoji {
+        font-size: 28px;
+      }
+
+      .section {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .section h2 {
+        margin: 0;
+        font-size: 22px;
+        font-weight: 700;
+      }
+
+      .card {
+        border-radius: 20px;
+        padding: 18px;
+        background: rgba(18, 18, 18, 0.86);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 16px 36px rgba(0, 0, 0, 0.32);
+      }
+
+      .player-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 14px;
+      }
+
+      .player-card {
+        border-radius: 18px;
+        padding: 14px;
+        background: linear-gradient(160deg, rgba(255, 94, 0, 0.25), rgba(12, 12, 12, 0.92));
+        border: 1px solid rgba(255, 255, 255, 0.04);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .player-name {
+        font-weight: 600;
+      }
+
+      .player-meta {
+        font-size: 12px;
+        opacity: 0.75;
+      }
+
+      .tab-bar {
+        display: flex;
+        gap: 12px;
+      }
+
+      .tab-button {
+        flex: 1;
+        padding: 12px;
+        border-radius: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(0, 0, 0, 0.32);
+        color: var(--cream);
+        font-weight: 500;
+        cursor: pointer;
+      }
+
+      .tab-button.active {
+        background: rgba(255, 94, 0, 0.25);
+        border-color: rgba(255, 94, 0, 0.65);
+        color: var(--neon-orange);
+      }
+
+      .missions-list {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+
+      .mission-card {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        border-radius: 18px;
+        padding: 16px;
+        background: linear-gradient(160deg, rgba(180, 94, 255, 0.22), rgba(12, 12, 12, 0.92));
+        border: 1px solid rgba(255, 255, 255, 0.06);
+      }
+
+      .mission-meta {
+        font-size: 12px;
+        opacity: 0.7;
+      }
+
+      button.primary {
+        padding: 10px 16px;
+        border-radius: 14px;
+        border: none;
+        background: linear-gradient(135deg, rgba(255, 94, 0, 1), rgba(180, 94, 255, 1));
+        color: var(--cream);
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 8px 18px rgba(255, 94, 0, 0.32);
+      }
+
+      button.primary:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        box-shadow: none;
+      }
+
+      .back-button {
+        background: none;
+        border: none;
+        color: var(--purple);
+        font-weight: 600;
+        cursor: pointer;
+        padding: 0;
+      }
+
+      .empty-state {
+        padding: 24px;
+        text-align: center;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px dashed rgba(255, 255, 255, 0.12);
+      }
+
+      .loading {
+        text-align: center;
+        font-size: 14px;
+        opacity: 0.7;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module">
+      import React, { useEffect, useMemo, useState } from 'https://esm.sh/react@18.2.0';
+      import { createRoot } from 'https://esm.sh/react-dom@18.2.0/client';
+
+      const SCREENS = {
+        MENU: 'menu',
+        FANTASY: 'fantasy',
+        MISSIONS: 'missions',
+      };
+
+      const AnimatedCoins = ({ coins }) => {
+        return React.createElement('span', { className: 'coins-pill' }, '💎', coins);
+      };
+
+      const Header = ({ user, coins, onBack, canGoBack }) => {
+        return React.createElement(
+          'header',
+          null,
+          React.createElement(
+            'div',
+            { className: 'user-pill' },
+            React.createElement('div', { className: 'user-avatar' }, user?.initials ?? 'HV'),
+            React.createElement(
+              'div',
+              null,
+              React.createElement('div', { style: { fontWeight: 600 } }, user?.displayName ?? 'Hooper'),
+              React.createElement('div', { style: { fontSize: 12, opacity: 0.7 } }, user?.role ?? 'Игрок')
+            )
+          ),
+          React.createElement(
+            'div',
+            { style: { display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '6px' } },
+            canGoBack
+              ? React.createElement(
+                  'button',
+                  { className: 'back-button', onClick: onBack },
+                  'Назад'
+                )
+              : null,
+            React.createElement(AnimatedCoins, { coins })
+          )
+        );
+      };
+
+      const MainMenu = ({ onNavigate }) => {
+        const buttons = [
+          { emoji: '🎮', title: 'Играть', target: null },
+          { emoji: '🧠', title: 'Фэнтези', target: SCREENS.FANTASY },
+          { emoji: '🔥', title: 'Задания', target: SCREENS.MISSIONS },
+          { emoji: '💬', title: 'Соцсеть', target: null },
+          { emoji: '💎', title: 'Магазин', target: null },
+        ];
+
+        return React.createElement(
+          'nav',
+          null,
+          buttons.map(({ emoji, title, target }, idx) =>
+            React.createElement(
+              'div',
+              {
+                key: title,
+                className: `menu-card ${idx === 0 ? 'full-width' : ''}`,
+                onClick: () => target && onNavigate(target),
+              },
+              React.createElement('span', { className: 'menu-emoji' }, emoji),
+              React.createElement('span', { className: 'menu-title' }, title),
+              !target
+                ? React.createElement('span', { style: { fontSize: 12, opacity: 0.6 } }, 'Скоро')
+                : React.createElement('span', { style: { fontSize: 12, opacity: 0.6 } }, 'Войти')
+            )
+          )
+        );
+      };
+
+      const FantasyScreen = ({ lineup, leaderboard, onAddPlayer }) => {
+        return React.createElement(
+          'div',
+          { className: 'section' },
+          React.createElement('h2', null, 'Фэнтези-лига'),
+          React.createElement(
+            'div',
+            { className: 'card' },
+            React.createElement('h3', null, 'Мой ростер'),
+            lineup?.length
+              ? React.createElement(
+                  'div',
+                  { className: 'player-grid' },
+                  lineup.map((player) =>
+                    React.createElement(
+                      'div',
+                      { key: player.id, className: 'player-card' },
+                      React.createElement('div', { className: 'player-name' }, player.name),
+                      React.createElement('div', { className: 'player-meta' }, `${player.position} • ${player.team}`),
+                      React.createElement(
+                        'div',
+                        { style: { fontSize: 12 } },
+                        `Средний балл: ${player.avgScore}`
+                      )
+                    )
+                  )
+                )
+              : React.createElement(
+                  'div',
+                  { className: 'empty-state' },
+                  'Добавь игроков, чтобы собирать очки каждую неделю!'
+                ),
+            React.createElement(
+              'button',
+              { className: 'primary', onClick: onAddPlayer },
+              'Добавить медийного игрока'
+            )
+          ),
+          React.createElement(
+            'div',
+            { className: 'card' },
+            React.createElement('h3', null, 'Топ недели'),
+            leaderboard?.length
+              ? leaderboard.map((entry, index) =>
+                  React.createElement(
+                    'div',
+                    {
+                      key: entry.user,
+                      style: {
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        marginBottom: index === leaderboard.length - 1 ? 0 : 12,
+                      },
+                    },
+                    React.createElement('span', null, `${index + 1}. ${entry.user}`),
+                    React.createElement('span', null, `${entry.points} pts`)
+                  )
+                )
+              : React.createElement('div', { className: 'loading' }, 'Загрузка рейтинга...')
+          )
+        );
+      };
+
+      const MissionsScreen = ({ missions, onComplete, completing }) => {
+        const categories = useMemo(
+          () => missions.reduce((acc, mission) => {
+            acc[mission.type] = acc[mission.type] || [];
+            acc[mission.type].push(mission);
+            return acc;
+          }, {}),
+          [missions]
+        );
+
+        return React.createElement(
+          'div',
+          { className: 'section' },
+          React.createElement('h2', null, 'Задания'),
+          Object.entries(categories).map(([type, list]) =>
+            React.createElement(
+              'div',
+              { key: type, className: 'card' },
+              React.createElement('h3', null, type === 'daily' ? 'Ежедневные' : type === 'weekly' ? 'Недельные' : 'Брендовые'),
+              React.createElement(
+                'div',
+                { className: 'missions-list' },
+                list.map((mission) =>
+                  React.createElement(
+                    'div',
+                    { key: mission.id, className: 'mission-card' },
+                    React.createElement('div', { style: { fontWeight: 600 } }, mission.title),
+                    React.createElement('div', { className: 'mission-meta' }, mission.description),
+                    React.createElement(
+                      'div',
+                      { className: 'mission-meta' },
+                      `Награда: ${mission.rewardCoins}💎`
+                    ),
+                    React.createElement(
+                      'button',
+                      {
+                        className: 'primary',
+                        onClick: () => onComplete(mission.id),
+                        disabled: mission.completed || completing === mission.id,
+                      },
+                      mission.completed ? 'Выполнено' : completing === mission.id ? 'Зачисляем...' : 'Выполнить'
+                    )
+                  )
+                )
+              )
+            )
+          )
+        );
+      };
+
+      const App = () => {
+        const [activeScreen, setActiveScreen] = useState(SCREENS.MENU);
+        const [user, setUser] = useState(null);
+        const [coins, setCoins] = useState(0);
+        const [lineup, setLineup] = useState([]);
+        const [leaderboard, setLeaderboard] = useState([]);
+        const [missions, setMissions] = useState([]);
+        const [loadingMissionId, setLoadingMissionId] = useState(null);
+
+        useEffect(() => {
+          const webApp = window.Telegram?.WebApp;
+          if (webApp) {
+            webApp.ready();
+            webApp.expand?.();
+            const initDataUnsafe = webApp.initDataUnsafe;
+            const tgUser = initDataUnsafe?.user;
+            if (tgUser) {
+              setUser({
+                id: String(tgUser.id),
+                displayName: `${tgUser.first_name ?? ''} ${tgUser.last_name ?? ''}`.trim() || 'Hooper',
+                role: 'Игрок',
+                initials: (tgUser.first_name?.[0] ?? 'H') + (tgUser.last_name?.[0] ?? 'V'),
+              });
+            }
+          }
+        }, []);
+
+        useEffect(() => {
+          const loadProfile = async () => {
+            try {
+              const response = await fetch('/api/users/me');
+              if (!response.ok) throw new Error('Failed to load user');
+              const payload = await response.json();
+              setUser((prev) => ({ ...prev, ...payload }));
+              setCoins(payload.coins ?? 0);
+            } catch (error) {
+              console.error(error);
+            }
+          };
+
+          loadProfile();
+        }, []);
+
+        useEffect(() => {
+          if (activeScreen === SCREENS.FANTASY) {
+            const loadFantasy = async () => {
+              try {
+                const response = await fetch('/api/fantasy');
+                if (!response.ok) throw new Error('Failed to load fantasy data');
+                const payload = await response.json();
+                setLineup(payload.lineup ?? []);
+                setLeaderboard(payload.leaderboard ?? []);
+              } catch (error) {
+                console.error(error);
+              }
+            };
+
+            loadFantasy();
+          }
+        }, [activeScreen]);
+
+        useEffect(() => {
+          if (activeScreen === SCREENS.MISSIONS) {
+            const loadMissions = async () => {
+              try {
+                const response = await fetch('/api/missions');
+                if (!response.ok) throw new Error('Failed to load missions');
+                const payload = await response.json();
+                setMissions(payload.missions ?? []);
+              } catch (error) {
+                console.error(error);
+              }
+            };
+
+            loadMissions();
+          }
+        }, [activeScreen]);
+
+        const handleAddPlayer = async () => {
+          try {
+            const response = await fetch('/api/fantasy/lineup', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ playerId: 'hv-legend' }),
+            });
+            if (!response.ok) throw new Error('Failed to add player');
+            const payload = await response.json();
+            setLineup(payload.lineup ?? []);
+          } catch (error) {
+            console.error(error);
+          }
+        };
+
+        const handleCompleteMission = async (missionId) => {
+          setLoadingMissionId(missionId);
+          try {
+            const response = await fetch(`/api/missions/${missionId}/complete`, { method: 'POST' });
+            if (!response.ok) throw new Error('Failed to complete mission');
+            const payload = await response.json();
+            setCoins(payload.coins);
+            setMissions((prev) =>
+              prev.map((mission) =>
+                mission.id === missionId ? { ...mission, completed: true } : mission
+              )
+            );
+          } catch (error) {
+            console.error(error);
+          } finally {
+            setLoadingMissionId(null);
+          }
+        };
+
+        return React.createElement(
+          'div',
+          { className: 'app-shell' },
+          React.createElement(Header, {
+            user,
+            coins,
+            onBack: () => setActiveScreen(SCREENS.MENU),
+            canGoBack: activeScreen !== SCREENS.MENU,
+          }),
+          activeScreen === SCREENS.MENU
+            ? React.createElement(MainMenu, { onNavigate: setActiveScreen })
+            : null,
+          activeScreen === SCREENS.FANTASY
+            ? React.createElement(FantasyScreen, {
+                lineup,
+                leaderboard,
+                onAddPlayer: handleAddPlayer,
+              })
+            : null,
+          activeScreen === SCREENS.MISSIONS
+            ? React.createElement(MissionsScreen, {
+                missions,
+                onComplete: handleCompleteMission,
+                completing: loadingMissionId,
+              })
+            : null
+        );
+      };
+
+      const root = createRoot(document.getElementById('root'));
+      root.render(React.createElement(App));
+    </script>
+  </body>
 </html>
