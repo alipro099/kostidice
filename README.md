@@ -1,61 +1,82 @@
-# HoopVerse Mini App (MVP)
+# Media Basket Mini
 
-HoopVerse — это Telegram Mini App, объединяющее медийный баскетбол, фэнтези-лигу и геймификацию. Этот MVP содержит базовые экраны (главное меню, фэнтези и задания) и серверное API, готовое к интеграции с PostgreSQL и TON-платежами.
+Media Basket Mini — Telegram Mini App в неоновой эстетике баскетбольной лиги. MVP включает
+домашний экран, миссии, профиль и мини-игру «Flick Shot», где зелёный мяч нужно бросать
+свайпом по дуге в корзину.
 
-## Содержание
+## Стэк
 
-- [Фронтенд](#фронтенд)
-- [Бэкенд](#бэкенд)
-- [Запуск](#запуск)
-- [API](#api)
-- [Дальнейшее развитие](#дальнейшее-развитие)
+- React + TypeScript + Vite (`client/`)
+- Zustand для игрового состояния и локальных рекордов
+- CSS Modules для темной UI-темы с неоновыми акцентами
+- Telegram WebApp SDK (инициализация, Haptic Feedback, share API)
+- Mock API (локально) + заготовка backend Express/PostgreSQL (`server/`)
 
-## Фронтенд
+## Структура
 
-- Использует React (через ESM CDN) и Telegram WebApp SDK.
-- Расположен в `index.html`.
-- Реализованы экраны:
-  - Главное меню с кнопками перехода.
-  - Фэнтези-лига (ростер, лидеры недели, добавление игрока).
-  - Задания с начислением коина за выполнение.
-- Минималистичный UI с неоновыми акцентами и 3D-карточками.
-- Шрифт Roboto и адаптация под Telegram WebApp.
-
-## Бэкенд
-
-- Node.js + Express (`server/index.js`).
-- Хранение данных в памяти (готовность к PostgreSQL через `server/services/postgres.js`).
-- Сервисы: пользователи, фэнтези, задания (`server/services`).
-- Заготовки для команд, матчей, магазина и TON-конфигурации.
+```
+.
+├── client               # фронтенд на Vite
+│   ├── index.html
+│   ├── package.json
+│   └── src
+│       ├── app          # роутер и экраны (Home, Play, Missions, Profile)
+│       ├── components   # UI-компоненты (Button, Card, ScoreBadge, Tabs)
+│       ├── features
+│       │   ├── game     # Canvas-игра, физика, Zustand-store, звуки, эффекты
+│       │   ├── missions # списки миссий, заглушки под API
+│       │   └── profile  # отображение статистики
+│       ├── services     # telegram.ts, storage helpers, mockApi
+│       └── styles       # глобальные стили и токены
+├── server               # опциональный backend skeleton (Express + PostgreSQL)
+└── README.md
+```
 
 ## Запуск
 
 ```bash
 npm install
-npm run start
+npm run dev
 ```
 
-По умолчанию API доступно на `http://localhost:8080`. Раздайте `index.html` любым статическим сервером (например, `npx serve .`) и откройте в Telegram Mini App или браузере.
+Приложение откроется на [http://localhost:5173](http://localhost:5173). При запуске внутри
+Telegram Mini App укажите этот URL в настройках BotFather (`/setdomain`).
 
-## API
+### Сборка и предпросмотр
 
-| Метод | Путь | Описание |
-| --- | --- | --- |
-| GET | `/api/users/me` | Профиль пользователя и баланс коина |
-| POST | `/api/users/me/coins` | Изменить баланс |
-| GET | `/api/fantasy` | Лайн-ап и лидерборд |
-| POST | `/api/fantasy/lineup` | Добавить игрока в ростер |
-| GET | `/api/missions` | Доступные задания |
-| POST | `/api/missions/:id/complete` | Завершить задание |
-| GET | `/api/teams` | Предварительные данные по командам |
-| GET | `/api/matches` | Список матчей |
-| GET | `/api/shop` | Товары магазина |
-| GET | `/api/ton/config` | Конфигурация TON |
+```bash
+npm run build
+npm run preview
+```
 
-## Дальнейшее развитие
+### Развёртывание
 
-- Реальная интеграция с PostgreSQL и миграции схем.
-- Авторизация через Telegram Login Widget и привязка к `userId`.
-- Турнирный модуль: создание команд, матчи, рейтинги.
-- Режим соцсети с свайпами и чатами.
-- Магазин с оплатой TON и рублями, NFT-каталог брендов.
+1. Выполните `npm run build` — статические файлы появятся в `client/dist`.
+2. Залейте содержимое `client/dist` на любой статический хостинг (Vercel, Netlify, Cloudflare Pages).
+3. В BotFather укажите продакшен-домен в разделе **WebApp**.
+
+### Опциональный backend
+
+Файл `server/index.ts` содержит пример Express-приложения с lazy-импортом зависимостей и
+заготовками маршрутов для миссий и шаринга. Чтобы активировать сервер:
+
+```bash
+npm install express cors pg
+node --loader ts-node/esm server/index.ts
+```
+
+Здесь можно подключить PostgreSQL, Telegram Bot API и реальные миссии.
+
+## Особенности MVP
+
+- **Игра Flick Shot**: HTML5 Canvas, простая баллистика, свайп-ввод, траектория-призрак,
+  комбо-счёт и визуальные эффекты.
+- **Запись рекордов**: локальное хранение лучших результатов и последних сессий, кнопка
+  «Поделиться рекордом» через Telegram API.
+- **Миссии**: мок-данные и имитация получения награды с использованием mock API.
+- **Профиль**: данные пользователя из `Telegram.WebApp.initDataUnsafe`, кнопка очистки
+  локальных данных.
+- **UI**: темный фон, контрастная типографика, неоновый мяч и волнистые акценты в духе
+  Media Basket.
+
+Готово к дальнейшему расширению — добавляйте реальные API, платежи и мультиплеерные режимы.

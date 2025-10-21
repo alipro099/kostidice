@@ -1,0 +1,22 @@
+.screen {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.balance {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-accent);
+}
+
+.note {
+  font-size: 13px;
+  color: var(--color-text-subtle);
+}

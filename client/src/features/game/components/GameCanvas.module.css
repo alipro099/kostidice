@@ -1,0 +1,39 @@
+.wrapper {
+  position: relative;
+  flex: 1;
+  min-height: 360px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: radial-gradient(circle at 50% 10%, rgba(0, 230, 118, 0.18), rgba(0, 0, 0, 0.8));
+  overflow: hidden;
+}
+
+.canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  touch-action: none;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  background: linear-gradient(180deg, rgba(14, 14, 14, 0.78) 0%, rgba(14, 14, 14, 0.9) 100%);
+  color: var(--color-text-primary);
+  text-align: center;
+  padding: 24px;
+}
+
+.waveBand {
+  position: absolute;
+  inset: auto 0 -30px;
+  height: 120px;
+  background: linear-gradient(180deg, rgba(0, 230, 118, 0.35) 0%, rgba(0, 230, 118, 0) 100%);
+  filter: blur(30px);
+  opacity: 0.65;
+}
