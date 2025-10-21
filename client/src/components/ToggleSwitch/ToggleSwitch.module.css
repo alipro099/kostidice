@@ -1,0 +1,40 @@
+.switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.track {
+  width: 48px;
+  height: 28px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  position: relative;
+  transition: background var(--transition-base);
+}
+
+.trackActive {
+  background: rgba(0, 230, 118, 0.4);
+}
+
+.thumb {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #ffffff;
+  transition: transform var(--transition-base);
+}
+
+.thumbActive {
+  transform: translateX(20px);
+}
+
+.label {
+  font-size: 14px;
+  color: var(--color-text-subtle);
+}

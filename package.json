@@ -1,18 +1,19 @@
 {
-  "name": "hoopverse-miniapp",
+  "name": "media-basket-mini",
   "version": "0.1.0",
-  "description": "HoopVerse Telegram Mini App MVP",
-  "type": "module",
+  "private": true,
+  "description": "Media Basket Mini Telegram WebApp MVP",
+  "workspaces": [
+    "client"
+  ],
   "scripts": {
-    "start": "node server/index.js",
-    "dev": "nodemon server/index.js"
+    "dev": "npm run dev --workspace client",
+    "build": "npm run build --workspace client",
+    "preview": "npm run preview --workspace client",
+    "lint": "npm run lint --workspace client",
+    "deploy": "npm run build --workspace client"
   },
-  "dependencies": {
-    "cors": "^2.8.5",
-    "express": "^4.19.2",
-    "pg": "^8.11.5"
-  },
-  "devDependencies": {
-    "nodemon": "^3.1.0"
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
